@@ -18,9 +18,14 @@ jobs:
     - name: Extract bill data from issue
       id: extract
       run: |
-        echo "bill_number=$(jq -r '.issue.body | capture(\"Bill Number:\\s*(?<num>.+)\") | .num' <<< \"$GITHUB_EVENT_PATH\")" >> $GITHUB_OUTPUT
-        echo "action=$(jq -r '.issue.body | capture(\"Action:\\s*(?<act>.+)\") | .act' <<< \"$GITHUB_EVENT_PATH\")" >> $GITHUB_OUTPUT
+        issue_body=$(jq -r '.issue.body' "$GITHUB_EVENT_PATH")
 
+        bill=$(echo "$issue_body" | grep -oP 'Bill Number:\s*\K.*')
+        action=$(echo "$issue_body" | grep -oP 'Action:\s*\K.*')
+
+        echo "bill_number=$bill" >> $GITHUB_OUTPUT
+        echo "action=$action" >> $GITHUB_OUTPUT
+        
     - name: Ensure config directory exists
       run: mkdir -p config
 
