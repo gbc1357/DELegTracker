@@ -15,11 +15,6 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Debug issue body
-      run: |
-        echo "RAW ISSUE BODY:"
-        printf "%s\n" "${{ github.event.issue.body }}"
-
     - name: Extract bill data from issue
       id: extract
       run: |
