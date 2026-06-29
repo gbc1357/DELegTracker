@@ -25,8 +25,8 @@ jobs:
       run: |
         body="${{ github.event.issue.body }}"
 
-        bill=$(echo "$body" | awk '/^### Bill Number/{getline; print $0}' | xargs)
-        action=$(echo "$body" | awk '/^### Action/{getline; print $0}' | xargs)
+        bill=$(echo "$body" | awk '/^[[:space:]]*### Bill Number/ {getline; while ($0 ~ /^[[:space:]]*$/) getline; print $0}' | xargs)
+        action=$(echo "$body" | awk '/^[[:space:]]*### Action/ {getline; while ($0 ~ /^[[:space:]]*$/) getline; print $0}' | xargs)
 
         echo "bill_number=$bill" >> $GITHUB_OUTPUT
         echo "action=$action" >> $GITHUB_OUTPUT
