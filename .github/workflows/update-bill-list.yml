@@ -18,10 +18,10 @@ jobs:
     - name: Extract bill data from issue
       id: extract
       run: |
-        issue_body=$(jq -r '.issue.body' "$GITHUB_EVENT_PATH")
+        body="${{ github.event.issue.body }}"
 
-        bill=$(echo "$issue_body" | grep -oP 'Bill Number:\s*\K.*')
-        action=$(echo "$issue_body" | grep -oP 'Action:\s*\K.*')
+        bill=$(echo "$body" | sed -n 's/^Bill Number:[[:space:]]*//p')
+        action=$(echo "$body" | sed -n 's/^Action:[[:space:]]*//p')
 
         echo "bill_number=$bill" >> $GITHUB_OUTPUT
         echo "action=$action" >> $GITHUB_OUTPUT
