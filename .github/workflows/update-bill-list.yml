@@ -12,6 +12,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Extract bill data from issue
       id: extract
@@ -32,9 +34,6 @@ jobs:
       run: |
         BILL="${{ steps.extract.outputs.bill_number }}"
         ACTION="${{ steps.extract.outputs.action }}"
-
-        echo "Bill: $BILL"
-        echo "Action: $ACTION"
 
         if [ "$ACTION" = "Add" ]; then
           jq --arg bill "$BILL" '. + [$bill] | unique' config/bills.json > config/tmp.json
