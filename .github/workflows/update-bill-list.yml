@@ -1,0 +1,59 @@
+name: Update Bill List
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  update-list:
+    if: contains(github.event.issue.labels.*.name, 'bill-update')
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Extract bill data from issue
+      id: extract
+      run: |
+        echo "bill_number=$(jq -r '.issue.body | capture(\"Bill Number:\\s*(?<num>.+)\") | .num' <<< \"$GITHUB_EVENT_PATH\")" >> $GITHUB_OUTPUT
+        echo "action=$(jq -r '.issue.body | capture(\"Action:\\s*(?<act>.+)\") | .act' <<< \"$GITHUB_EVENT_PATH\")" >> $GITHUB_OUTPUT
+
+    - name: Ensure config directory exists
+      run: mkdir -p config
+
+    - name: Create bills.json if it does not exist
+      run: |
+        if [ ! -f config/bills.json ]; then
+          echo "[]" > config/bills.json
+        fi
+
+    - name: Update bills.json
+      run: |
+        BILL="${{ steps.extract.outputs.bill_number }}"
+        ACTION="${{ steps.extract.outputs.action }}"
+
+        echo "Bill: $BILL"
+        echo "Action: $ACTION"
+
+        if [ "$ACTION" = "Add" ]; then
+          jq --arg bill "$BILL" '. + [$bill] | unique' config/bills.json > config/tmp.json
+        else
+          jq --arg bill "$BILL" 'map(select(. != $bill))' config/bills.json > config/tmp.json
+        fi
+
+        mv config/tmp.json config/bills.json
+
+    - name: Commit updated bill list
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git add config/bills.json
+        git commit -m "Updated bill list via Issue Form" || echo "No changes to commit"
+        git push
+
+    - name: Trigger main bill tracker workflow
+      uses: peter-evans/repository-dispatch@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        event-type: tracker-trigger
