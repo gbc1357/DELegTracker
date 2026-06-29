@@ -20,8 +20,8 @@ jobs:
       run: |
         body="${{ github.event.issue.body }}"
 
-        bill=$(echo "$body" | sed -n 's/^Bill Number:[[:space:]]*//p')
-        action=$(echo "$body" | sed -n 's/^Action:[[:space:]]*//p')
+        bill=$(echo "$body" | awk '/^### Bill Number/{getline; print $0}' | xargs)
+        action=$(echo "$body" | awk '/^### Action/{getline; print $0}' | xargs)
 
         echo "bill_number=$bill" >> $GITHUB_OUTPUT
         echo "action=$action" >> $GITHUB_OUTPUT
