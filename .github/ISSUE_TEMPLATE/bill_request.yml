@@ -1,0 +1,30 @@
+name: "Add or Remove a Bill from Tracking"
+description: "Submit a request to add or remove a Delaware bill from the automated tracker."
+title: "[Bill Update] "
+labels: ["bill-update"]
+
+body:
+  - type: input
+    id: bill_number
+    attributes:
+      label: "Bill Number"
+      description: "Enter the bill exactly as it appears (e.g., HB 440, SB 75). The tracker will auto-detect substitutes."
+      placeholder: "HB 440"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: action
+    attributes:
+      label: "Action"
+      options:
+        - Add
+        - Remove
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: "Notes (Optional)"
+      description: "Any context or notes for this request."
