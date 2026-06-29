@@ -1,7 +1,8 @@
 name: "Add or Remove a Bill from Tracking"
 description: "Submit a request to add or remove a Delaware bill from the automated tracker."
-title: "[Bill Update] "
-labels: ["bill-update"]
+title: "[Bill Update]"
+labels:
+  - bill-update
 
 body:
   - type: markdown
