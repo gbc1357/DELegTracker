@@ -4,6 +4,12 @@ title: "[Bill Update] "
 labels: ["bill-update"]
 
 body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Bill Tracking Request
+        Please fill out this form to add or remove a bill.
+
   - type: input
     id: bill_number
     attributes:
